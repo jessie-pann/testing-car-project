@@ -13,12 +13,14 @@ vehicleData.get('/makes', (req, res) => {
 
         const vehicles = JSON.parse(data); 
         const makes = vehicles.map(each => each.make).reduce((acc, cur) => {
-            if (!acc.includes(cur)) {
-                acc.push(cur); 
-            }; 
-            return acc; 
-
-        }, [] );
+            const existingMake = acc.find(item => item.make === cur);
+            if (existingMake) {
+                existingMake.count++;
+            } else {
+                acc.push({make: cur, count:1})
+            }
+            return acc;
+        }, [])
         res.json(makes); 
     })
 })
