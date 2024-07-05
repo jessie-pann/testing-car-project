@@ -55,6 +55,19 @@ app.get('/api/models/:make', (req, res) => {
         
     }); 
 
+    app.get('/api/vehicles/:make/:model', (req, res) => {
+        const makeSelected = req.params.make;
+        const modelSelected = req.params.model;
+        fs.readFile('../data/data.json', (err, data) => {
+            if(err) {
+                console.log('error')
+            }
+            const vehicles = JSON.parse(data); 
+            const vehiclesSelected = vehicles.filter(each => each.make === makeSelected && each.model === modelSelected)
+            res.json(vehiclesSelected); 
+        })
+    })
+
 
 app.listen(port, () => {
     console.log(`listening on port: ${port}`);

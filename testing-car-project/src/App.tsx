@@ -9,9 +9,15 @@ export interface Model {
   count: number;
 }
 
+export interface Vehicle {
+  derivative: string;
+}
+
 function App() {
   const [makeData, setMakeData] = useState([]);
   const [modelData, setModelData] = useState([]);
+  const [vehiclesSelected, setVehiclesSelected] = useState([]);
+  const [makeSelected, setMakeSelected] = useState("");
 
   const fetchMakeData = async () => {
     try {
@@ -34,6 +40,14 @@ function App() {
     fetchMakeData();
   }, []);
 
+  const fetchVehicles = async (make: string, model: string) => {
+    const ve = await fetch(
+      `http://localhost:3001/api/vehicles/${make}/${model}`
+    );
+    const veJSON = await ve.json();
+    setVehiclesSelected(veJSON);
+  };
+
   return (
     <>
       <header>
@@ -45,7 +59,12 @@ function App() {
           <fieldset>
             <legend className="visuallyhidden">Search filters</legend>
             <label>Make</label>
-            <select onChange={(e) => fetchModelData(e.target.value)}>
+            <select
+              onChange={(e) => {
+                fetchModelData(e.target.value);
+                setMakeSelected(e.target.value);
+              }}
+            >
               <option value="">Makes</option>
               {makeData.map((eachMake: Make) => {
                 return (
@@ -56,7 +75,9 @@ function App() {
               })}
             </select>
             <label>Model</label>
-            <select>
+            <select
+              onChange={(e) => fetchVehicles(makeSelected, e.target.value)}
+            >
               <option value="">Models</option>
               {modelData.map((eachModel: Model) => {
                 return (
@@ -68,6 +89,11 @@ function App() {
             </select>
           </fieldset>
         </form>
+        <div>
+          {vehiclesSelected.map((each: Vehicle) => (
+            <p>{each.derivative}</p>
+          ))}
+        </div>
       </section>
     </>
   );
