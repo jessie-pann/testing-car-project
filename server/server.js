@@ -1,39 +1,37 @@
 const express = require('express');
 const fs = require('fs');
-const vehicleData = express(); 
+const app = express(); 
 const port = 3001; 
+const cors = require("cors");
+app.use(cors());
 
-
-vehicleData.get('/makes', (req, res) => {
+app.get('/api/makes', (req, res) => {
     
     fs.readFile('../data/data.json', (err, data) => {
         if(err) {
             console.log('error')
         }
-
         const vehicles = JSON.parse(data); 
         const makes = vehicles.map(each => each.make).reduce((acc, cur) => {
             const existingMake = acc.find(item => item.make === cur);
             
-            // if (existingMake) {
-            //     existingMake.count++;
-            // } else {
-            //     acc.push({make: cur, count:1})
-            // }
-
-            acc.push({make: cur, count:existingMake ? existingMake.count++ : 1})
+            if (existingMake) {
+                existingMake.count++;
+            } else {
+                acc.push({make: cur, count:1})
+            }
             return acc;
         }, [])
         res.json(makes); 
     })
 })
 
-vehicleData.get('/models/:make', 'utf8', (req, res) => {
+app.get('/api/models/:make', (req, res) => {
     
     const makeSelected = req.params.make;
     fs.readFile('../data/data.json', (err, data) => {
         if(err) {
-            console.log(err);
+            res.send({status:500, message: err});
         }
         const vehicles = JSON.parse(data);
         const models = vehicles.reduce((acc, cur) => {   
@@ -41,12 +39,25 @@ vehicleData.get('/models/:make', 'utf8', (req, res) => {
                 acc.push(cur);
             }
             return acc;
-        }, []);
+        }, []).map(each => each.model).reduce((acc, cur) => {
+            const existingModel = acc.find(item => item.model === cur);
+            
+            if (existingModel) {
+                existingModel.count++;
+            } else {
+                acc.push({model: cur, count:1})
+            }
+            return acc;
+        }, [])
         res.json(models); 
-    })
-})
 
-vehicleData.listen(port); 
+        });
+        
+    }); 
 
+
+app.listen(port, () => {
+    console.log(`listening on port: ${port}`);
+  });
 
 

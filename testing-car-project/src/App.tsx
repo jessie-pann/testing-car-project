@@ -14,13 +14,18 @@ function App() {
   const [modelData, setModelData] = useState([]);
 
   const fetchMakeData = async () => {
-    const makes = await fetch("http://localhost:3001/makes");
-    const makesJSON = await makes.json();
-    setMakeData(makesJSON);
+    try {
+      const makes = await fetch("http://localhost:3001/api/makes");
+      const makesJSON = await makes.json();
+      setMakeData(makesJSON);
+    } catch (err) {
+      console.log(err);
+    }
   };
+  console.log(makeData);
 
   const fetchModelData = async (make: string) => {
-    const models = await fetch(`http://localhost:3001/models/${make}`);
+    const models = await fetch(`http://localhost:3001/api/models/${make}`);
     const modelsJSON = await models.json();
     setModelData(modelsJSON);
   };
@@ -45,8 +50,7 @@ function App() {
               {makeData.map((eachMake: Make) => {
                 return (
                   <option key={eachMake.make} value={eachMake.make}>
-                    {eachMake.make}
-                    {eachMake.count}
+                    {eachMake.make} {eachMake.count}
                   </option>
                 );
               })}
@@ -57,8 +61,7 @@ function App() {
               {modelData.map((eachModel: Model) => {
                 return (
                   <option key={eachModel.model} value={eachModel.model}>
-                    {eachModel.model}
-                    {eachModel.count}
+                    {eachModel.model} {eachModel.count}
                   </option>
                 );
               })}
