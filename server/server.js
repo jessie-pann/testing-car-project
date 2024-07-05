@@ -14,23 +14,35 @@ vehicleData.get('/makes', (req, res) => {
         const vehicles = JSON.parse(data); 
         const makes = vehicles.map(each => each.make).reduce((acc, cur) => {
             const existingMake = acc.find(item => item.make === cur);
-            if (existingMake) {
-                existingMake.count++;
-            } else {
-                acc.push({make: cur, count:1})
-            }
+            
+            // if (existingMake) {
+            //     existingMake.count++;
+            // } else {
+            //     acc.push({make: cur, count:1})
+            // }
+
+            acc.push({make: cur, count:existingMake ? existingMake.count++ : 1})
             return acc;
         }, [])
         res.json(makes); 
     })
 })
 
-vehicleData.get('/models/:make', (req, res) => {
-    console.log(req.params.make); 
-    const model = req.params.make;
+vehicleData.get('/models/:make', 'utf8', (req, res) => {
+    
+    const makeSelected = req.params.make;
     fs.readFile('../data/data.json', (err, data) => {
+        if(err) {
+            console.log(err);
+        }
         const vehicles = JSON.parse(data);
-        res.json(vehicles); 
+        const models = vehicles.reduce((acc, cur) => {   
+            if(cur.make === makeSelected) {
+                acc.push(cur);
+            }
+            return acc;
+        }, []);
+        res.json(models); 
     })
 })
 
