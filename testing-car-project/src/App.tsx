@@ -22,13 +22,13 @@ function App() {
   const fetchMakeData = async () => {
     try {
       const makes = await fetch("http://localhost:3001/api/makes");
+
       const makesJSON = await makes.json();
       setMakeData(makesJSON);
     } catch (err) {
       console.log(err);
     }
   };
-  console.log(makeData);
 
   const fetchModelData = async (make: string) => {
     const models = await fetch(`http://localhost:3001/api/models/${make}`);
@@ -39,6 +39,8 @@ function App() {
   useEffect(() => {
     fetchMakeData();
   }, []);
+  console.log(makeData);
+  console.log(modelData);
 
   const fetchVehicles = async (make: string, model: string) => {
     const ve = await fetch(
